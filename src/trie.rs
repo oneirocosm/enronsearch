@@ -51,10 +51,13 @@ impl Trie {
         // create a result from it and its children using
         // breadth first search, then return the top 100 results
         let mut output = Vec::new();
-        let queue = VecDeque::from([node]);
-        while queue.is_empty() && output.len() <= 100 {
+        let mut queue = VecDeque::from([node]);
+        while !queue.is_empty() && output.len() <= 100 {
+            let node = queue.pop_front().unwrap();
             let mut new_locations: Vec<path::PathBuf> = node.locations.iter().cloned().collect();
             output.append(&mut new_locations);
+            let mut children: VecDeque<&TrieNode> = node.children.iter().map(|(_, value)| value).collect();
+            queue.append(&mut children);
         }
 
         // at this point, there can be some extra elements in our return, so let's ensure
